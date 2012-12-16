@@ -1,0 +1,9 @@
+[submodule "rodentbane"]
+	path = rodentbane
+	url = ./rodentbane
+[submodule "shifty"]
+	path = shifty
+	url = ./shifty
+[submodule "vicious"]
+	path = vicious
+	url = ./vicious
