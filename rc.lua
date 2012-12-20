@@ -37,10 +37,8 @@ print("Entered rc.lua: " .. os.time())
 beautiful.init(awful.util.getdir("config") .. "/themes/black/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
---terminal = "x-terminal-emulator"
 browser = "firefox"
 terminal = "myterminal"
---terminal = "sakura"
 editor = os.getenv("EDITOR") or "vim"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -56,15 +54,15 @@ modkey_sym = "Super_L"
 layouts =
 {
     awful.layout.suit.max,
+    awful.layout.suit.floating,
     awful.layout.suit.tile,
+    awful.layout.suit.fair,
+    awful.layout.suit.fair.horizontal,
     awful.layout.suit.tile.left,
     awful.layout.suit.tile.bottom,
     awful.layout.suit.tile.top,
-    awful.layout.suit.fair,
-    awful.layout.suit.fair.horizontal,
-    awful.layout.suit.max.fullscreen,
     awful.layout.suit.magnifier,
-    awful.layout.suit.floating,
+    awful.layout.suit.max.fullscreen,
 }
 -- }}}
 
@@ -605,63 +603,72 @@ root.buttons(awful.util.table.join(
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
     --Tags
-     awful.key({ modkey,           }, "Left",   function ()
-       save_opacity()
-       awful.tag.viewprev()
-       restore_opacity()
+     awful.key({ modkey,          } , "Left",   function ()
+     save_opacity()
+     awful.tag.viewprev()
+     restore_opacity()
      end)
-    ,awful.key({ modkey,           }, "Prior",  function ()
+     ,awful.key({ modkey,         } , "Prior",  function ()
        save_opacity()
        awful.tag.viewprev()
-       restore_opacity() end)
-    --,awful.key({ modkey,           }, "s",  function ()
-       --save_opacity()
-       --awful.tag.viewprev()
-       --restore_opacity() end)
-    ,awful.key({ modkey,           }, ",",  function ()
+       restore_opacity() 
+     end)
+     ,awful.key({ modkey,         } , "s",      function ()
        save_opacity()
        awful.tag.viewprev()
-       restore_opacity() end)
-    ,awful.key({ modkey,           }, "Right",  function ()
+       restore_opacity() 
+     end)
+     ,awful.key({ modkey,         } , ",",      function ()
+       save_opacity()
+       awful.tag.viewprev()
+       restore_opacity() 
+     end)
+     ,awful.key({ modkey,         } , "Right",  function ()
        save_opacity()
        awful.tag.viewnext()
-       restore_opacity() end)
-    ,awful.key({ modkey,           }, "Next",   function ()
+       restore_opacity() 
+     end)
+     ,awful.key({ modkey,         } , "Next",   function ()
        save_opacity()
        awful.tag.viewnext()
-       restore_opacity() end)
-    --,awful.key({ modkey,           }, "d",  function ()
-       --save_opacity()
-       --awful.tag.viewnext()
-       --restore_opacity() end)
-    ,awful.key({ modkey,           }, ".",  function ()
+       restore_opacity() 
+     end)
+     ,awful.key({ modkey,         } , "d",      function ()
        save_opacity()
        awful.tag.viewnext()
-       restore_opacity() end)
-    ,awful.key({ modkey,           }, "Escape", function ()
+       restore_opacity() 
+     end)
+     ,awful.key({ modkey,         } , ".",      function ()
+       save_opacity()
+       awful.tag.viewnext()
+       restore_opacity() 
+     end)
+     ,awful.key({ modkey,         } , "Escape", function ()
        save_opacity()
        awful.tag.history.restore()
-       restore_opacity() end)
-    ,awful.key({ modkey, "Shift"   }, "Escape", function ()
-       save_opacity()
+       restore_opacity() 
+     end)
+     ,awful.key({ modkey, "Shift" } , "Escape", function ()
+     save_opacity()
        awful.tag.history.restore()
        --local index = awful.getidx()
        local tag = awful.tag.selected()
        awful.tag.history.restore()
        awful.client.movetotag(tag)
        awful.tag.viewonly(tag)
-       restore_opacity() end)
+       restore_opacity() 
+     end)
 
     -- Shifty: keybindings specific to shifty
-    ,awful.key({ modkey, "Shift"   }, "Left",  shifty.send_prev           )
-    ,awful.key({ modkey, "Shift"   }, "Prior", shifty.send_prev           )
-    ,awful.key({ modkey, "Shift"   }, ",", shifty.send_prev           )
-    ,awful.key({ modkey, "Shift"   }, ".", shifty.send_next           )
-    ,awful.key({ modkey, "Shift"   }, "Right", shifty.send_next           )
-    ,awful.key({ modkey, "Shift"   }, "Next",  shifty.send_next           )
-    ,awful.key({ modkey, "Shift"    }, "d",     shifty.del                 ) -- delete a tag
-    --awful.key({modkey, "Shift"   }, "n", shifty.send_prev), -- client to prev tag
-    --awful.key({modkey            }, "n", shifty.send_next), -- client to next tag
+    ,awful.key({ modkey, "Shift"   }, "Left",  shifty.send_prev ) 
+    ,awful.key({ modkey, "Shift"   }, "Prior", shifty.send_prev ) 
+    ,awful.key({ modkey, "Shift"   }, ",", shifty.send_prev     ) 
+    ,awful.key({ modkey, "Shift"   }, ".", shifty.send_next     ) 
+    ,awful.key({ modkey, "Shift"   }, "s", shifty.send_prev     ) 
+    ,awful.key({ modkey, "Shift"   }, "d", shifty.send_next     ) 
+    ,awful.key({ modkey, "Shift"   }, "Right", shifty.send_next ) 
+    ,awful.key({ modkey, "Shift"   }, "Next",  shifty.send_next ) 
+    ,awful.key({ modkey, "Shift"    }, "x",     shifty.del      ) -- delete a tag
     ,awful.key({ modkey, "Shift"   }, "n", 
         function()
             local tag = awful.tag.selected()
@@ -671,8 +678,6 @@ globalkeys = awful.util.table.join(
             end
         end)
     ,awful.key({modkey, "Control" }, "n", function()
-        --display("switch")
-        --naughty.notify(string.format("%d", awful.tag.selected()))
         shifty.tagtoscr(awful.util.cycle(screen.count(), mouse.screen + 1))
     end)
     ,awful.key({modkey             }, "a", shifty.add) -- creat a new tag
@@ -726,32 +731,8 @@ globalkeys = awful.util.table.join(
       awful.layout.inc(layouts, -1) end)
     ,awful.key({ modkey,           }, ";",     function ()
       rodentbane.start() end)
-    ,awful.key({ modkey }, "s", function () menubar.show() end)
+    ,awful.key({ modkey }, "e", function () menubar.show() end)
     -- Prompt
-
-    --awful.key({modkey}, "F1", function()
-        --awful.prompt.run({prompt = "Run: "},
-        --mypromptbox[mouse.screen],
-        --awful.util.spawn, awful.completion.shell,
-        --awful.util.getdir("cache") .. "/history")
-        --end),
-
-    --,awful.key({modkey}, "F1",
-      --function()
-          --awful.prompt.run({prompt = "Run: "},
-          --mypromptbox[mouse.screen].widget,
-          --awful.util.spawn(text),
-          --awful.completion.shell,
-          --awful.util.getdir("cache") .. "/history")
-        --end)
-
-    --awful.key({modkey}, "F4", function()
-        --awful.prompt.run({prompt = "Run Lua code: "},
-        --mypromptbox[mouse.screen],
-        --awful.util.eval, nil,
-        --awful.util.getdir("cache") .. "/history_eval")
-        --end)
-
     ,awful.key({ modkey }, "F1",     function () mypromptbox[mouse.screen]:run() end)
 
     ,awful.key({ modkey }, "F2",
@@ -762,7 +743,6 @@ globalkeys = awful.util.table.join(
                     awful.util.spawn_with_shell(terminal .. " -e " .. text)
                   end,
                   awful.completion.shell,
-                  --nil, --old completion option
                   awful.util.getdir("cache") .. "/history_term_commands")
               end)
     ,awful.key({ modkey }, "F3",
@@ -800,7 +780,6 @@ globalkeys = awful.util.table.join(
    ,awful.key({ modkey }, "b", function ()
        mywibox[mouse.screen].visible = not mywibox[mouse.screen].visible
    end)
-   --,awful.key({ modkey },            "r",     function () mypromptbox[mouse.screen]:run() end)
    ,awful.key({ modkey }, "t", function ()
      if unfocused_opacity ~= 1 then
        unfocused_opacity = 1
@@ -819,7 +798,6 @@ globalkeys = awful.util.table.join(
    end)
 )
 
---rodentbane.binddefault()
 rodentbane.bind({ }, "h", function()
   rodentbane.cut("left")
 end)
@@ -985,51 +963,6 @@ clientkeys = awful.util.table.join(
 shifty.config.clientkeys = clientkeys
 shifty.config.modkey     = modkey
 
--- Compute the maximum number of digit we need, limited to 9
---keynumber = 0
---for s = 1, screen.count() do
-   --keynumber = math.min(9, math.max(#tags[s], keynumber));
---end
-
--- Bind all key numbers to tags.
--- Be careful: we use keycodes to make it works on any keyboard layout.
--- This should map on the top row of your keyboard, usually 1 to 9.
---for i = 1, keynumber do
-    --globalkeys = awful.util.table.join(globalkeys,
-        --awful.key({ modkey }, "#" .. i + 9,
-                  --function ()
-                        --local screen = mouse.screen
-                        --if tags[screen][i] then
-                            --awful.tag.viewonly(tags[screen][i])
-                        --end
-                  --end),
-        --awful.key({ modkey, "Control" }, "#" .. i + 9,
-                  --function ()
-                      --local screen = mouse.screen
-                      --if tags[screen][i] then
-                          --awful.tag.viewtoggle(tags[screen][i])
-                      --end
-                  --end),
-        --awful.key({ modkey, "Shift" }, "#" .. i + 9,
-                  --function ()
-                      --if client.focus and tags[client.focus.screen][i] then
-                          --awful.client.movetotag(tags[client.focus.screen][i])
-                      --end
-                  --end),
-        --awful.key({ modkey, "Control", "Shift" }, "#" .. i + 9,
-                  --function ()
-                      --if client.focus and tags[client.focus.screen][i] then
-                          --awful.client.toggletag(tags[client.focus.screen][i])
-                      --end
-                  --end))
---end
-
---clientbuttons = awful.util.table.join(
-    --awful.button({ }, 1, function (c) client.focus = c; c:raise() end)
-    --,awful.button({ modkey }, 1, awful.mouse.client.move)
-    --,awful.button({ modkey }, 3, awful.mouse.client.resize)
-    --)
-
 function tag_is_open(tagindex, screen_arg)
   local scr = screen_arg or mouse.screen or 1
   for _, t in ipairs(screen[scr]:tags()) do
@@ -1065,7 +998,8 @@ for i = 1, (shifty.config.maxtags or 9) do
             if client.focus then
                 save_opacity()
                 local t = shifty.getpos(i)
-                --awful.client.movetotag(t)
+                -- awful.client.movetotag(t)
+                -- Below is a workaround for a bug.
                 awful.tag.viewonly(t)
                 awful.tag.history.restore()
                 awful.client.movetotag(t)
@@ -1079,40 +1013,6 @@ for i = 1, (shifty.config.maxtags or 9) do
 root.keys(globalkeys)
 -- }}}
 
--- {{{ Signals
--- Signal function to execute when a new client appears.
---client.add_signal("manage", function (c, startup)
-    ---- Enable sloppy focus
-    --c:add_signal("mouse::enter", function(c)
-        --if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
-            --and awful.client.focus.filter(c)
-            --and client.focus.class ~= "Kupfer.py"
-            --then
-            --client.focus = c
-        --end
-    --end)
-
-    --if not startup then
-        ---- Set the windows at the slave,
-        ---- i.e. put it at the end of others instead of setting it master.
-        --awful.client.setslave(c)
-
-        ---- Put windows in a smart way, only if they does not set an initial position.
-        --if not c.size_hints.user_position and not c.size_hints.program_position then
-            --awful.placement.no_overlap(c)
-            --awful.placement.no_offscreen(c)
-        --end
-     --end
-     --if c.class == "Kupfer.py" then
-        --client.focus = c
-        --c:raise()
-        --awful.placement.centered(c)
-     --end
-     ----if c.class == "Gimp-2.6" then
-        ----awful.placement.no_offscreen(c)
-     ----end
---end)
-
 client.add_signal("focus", function(c)
         c.border_color = beautiful.border_focus
   if not special_opacities[c] then
@@ -1121,7 +1021,6 @@ client.add_signal("focus", function(c)
 end)
 
 unfocused_opacity = 1
---unfocused_opacity = 0.7
 temp_unfocused_opacity = 0.7
 function save_opacity()
   temp_unfocused_opacity = unfocused_opacity
@@ -1143,11 +1042,6 @@ function run_once(prg, args)
   else
     awful.util.spawn_with_shell("pgrep -u $USER -x " .. prg .. " || (" .. prg .. ")")
   end
-end
-
-function user_message(text, subtext)
-  awful.util.spawn("notify-send -t 10000 " .. string.format("%q", text) ..
-  ' ' .. string.format("%q", subtext))
 end
 
 function display(val, title)
@@ -1192,10 +1086,6 @@ function repr (val)
   return "" .. val
 end
 
---awful.util.spawn_with_shell("xcompmgr -f -F -c -C")
---awful.util.spawn_with_shell("xcompmgr -c -C")
--- awful.util.spawn(terminal)
-
 run_once("xcompmgr")
 run_once("xmodmap", ".Xmodmap")
 run_once("xsetroot", "-cursor_name left_ptr")
@@ -1212,14 +1102,12 @@ run_once("nvidia-settings", "-l")
 
 run_once("bluedevil-monolithic")
 
---awful.util.spawn_with_shell("autocutsel -fork &")
---awful.util.spawn_with_shell("autocutsel -selection PRIMARY -fork &")
 run_once("clipit")
 awful.util.spawn_with_shell("systemctl --user")
 awful.util.spawn("deluged")
 
 awful.util.spawn_with_shell("sleep 30 && pactl load-module module-bluetooth-discover")
 
--- Fix key's not working on startup.
+-- Fix keys not working on startup.
 awful.util.spawn(terminal .. " -e sleep 0")
 
