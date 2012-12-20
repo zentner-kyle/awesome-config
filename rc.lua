@@ -9,6 +9,9 @@ require("beautiful")
 
 -- Notification library
 require("naughty")
+naughty.config.presets.normal.opacity = 0.8
+naughty.config.presets.low.opacity = 0.8
+naughty.config.presets.critical.opacity = 0.8
 
 -- shifty - dynamic tagging library
 require("shifty")
@@ -92,10 +95,9 @@ shifty.config.tags = {
       exclusive = true,
       layout    = awful.layout.suit.max,
     },
-    ["office"] = {
+    ["docs"] = {
       position  = 4,
       screen    = 1,
-      persist   = true,
       layout    = awful.layout.suit.max,
       exclusive = true,
     },
@@ -133,6 +135,11 @@ shifty.config.tags = {
       solitary  = false,
       mwfact    = 0.50,
     },
+    ["office"] = {
+      persist   = true,
+      layout    = awful.layout.suit.max,
+      exclusive = true,
+    },
     ["p2p"] = {
       exclusive   = true,
     },
@@ -149,10 +156,6 @@ shifty.config.tags = {
     },
     ["gimp"] = {
       layout = awful.layout.suit.floating,
-    },
-    ["docs"] = {
-      layout    = awful.layout.suit.max,
-      exclusive = true,
     },
     ["flash"] = {
       layout      = awful.layout.suit.max.fullscreen,
@@ -1193,7 +1196,7 @@ end
 --awful.util.spawn_with_shell("xcompmgr -c -C")
 -- awful.util.spawn(terminal)
 
-run_once("xcompmgr -c")
+run_once("xcompmgr")
 run_once("xmodmap", ".Xmodmap")
 run_once("xsetroot", "-cursor_name left_ptr")
 run_once("xscreensaver", "-no-splash")
