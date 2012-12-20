@@ -147,8 +147,6 @@ shifty.config.tags = {
     ["art"] = {
       layout      = awful.layout.suit.max,
       exclusive   = true,
-      --solitary    = true,
-      --max_clients = 1,
     },
     ["virtual"] = {
     },
@@ -329,6 +327,7 @@ shifty.config.apps = {
         match = {
           "kupfer",
           "avant%-window%-navigator",
+          "awn%-applet",
         },
         honorsizehints = false,
         intrusive = true,
@@ -516,35 +515,14 @@ for s = 1, screen.count() do
                                               return awful.widget.tasklist.label.currenttags(c, s)
                                           end, mytasklist.buttons)
 
-    -- Create the wibox
     mywibox[s] = awful.wibox({ position = "top", screen = s })
-    -- Vicious Widgets
-    --
-    -- Initialize widget
     cpuwidget = widget({ type = "textbox" })
-    -- Register widget
     vicious.register(cpuwidget, vicious.widgets.cpu, "CPU: $1%")
-    -- Memory Text
-    -- Initialize widget
     memimage = widget({type = "imagebox"})
     memimage.image = image(awful.util.getdir("config") .. "/icons/mem.png")
 
     memwidgettext = widget({ type = "textbox" })
-    -- Register widget
-    --vicious.register(memwidget, vicious.widgets.mem, "$1% ($2MB/$3MB)", 13)
     vicious.register(memwidgettext, vicious.widgets.mem, " $1% ", 13)
-    -- Initialize widget
-    --memwidget = awful.widget.progressbar()
-    -- Progressbar properties
-    --memwidget:set_width(8)
-    --memwidget:set_height(10)
-    --memwidget:set_vertical(true)
-    --memwidget:set_background_color("#494B4F")
-    --memwidget:set_border_color(nil)
-    --memwidget:set_color("#AECF96")
-    --memwidget:set_gradient_colors({ "#AECF96", "#88A175", "#FF5656" })
-    -- Register widget
-    --vicious.register(memwidget, vicious.widgets.mem, "$1", 13)
     batimage = widget({type = "imagebox"})
     batimage.image = image(awful.util.getdir("config") .. "/icons/bat.png")
 
@@ -561,11 +539,6 @@ for s = 1, screen.count() do
     batwidget:set_color("#AECF96")
     batwidget:set_gradient_colors({ "#AECF96", "#88A175", "#FF5656" })
     vicious.register(batwidget, vicious.widgets.bat, "$2", 61, battery_name)
-    -- Initialize widget
-    --datewidget = widget({ type = "textbox" })
-    -- Register widget
-    --vicious.register(datewidget, vicious.widgets.date, "%b %d, %R", 60)
-    -- Add widgets to the wibox - order matters
     mywibox[s].widgets = {
         {
             mytaglist[s],
@@ -574,12 +547,10 @@ for s = 1, screen.count() do
         },
         mylayoutbox[s],
         mytextclock,
-        --memwidget,
         batwidgettext,
         batimage,
         memwidgettext,
         memimage,
-        --cpuwidget,
         s == 1 and mysystray or nil,
         mytasklist[s],
         layout = awful.widget.layout.horizontal.rightleft,
