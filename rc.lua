@@ -9,9 +9,9 @@ require("beautiful")
 
 -- Notification library
 require("naughty")
-naughty.config.presets.normal.opacity = 0.8
-naughty.config.presets.low.opacity = 0.8
-naughty.config.presets.critical.opacity = 0.8
+naughty.config.presets.normal.opacity = 1
+naughty.config.presets.low.opacity = 1
+naughty.config.presets.critical.opacity = 1
 
 -- shifty - dynamic tagging library
 require("shifty")
