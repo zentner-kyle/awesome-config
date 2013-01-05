@@ -1008,10 +1008,12 @@ client.add_signal("unfocus", function(c)
 end)
 
 function run_once(prg, args)
+  -- Magic workaround because pgrep is apparently detecting the process awesome spawns to run it.
+  -- Replacing awful.util.spawn_with_shell with awful.util.spawn does not work since the || is needed.
   if args then
-    awful.util.spawn_with_shell("pgrep -u $USER -x " .. prg .. " || (" .. prg .. " " .. args .. ")")
+    awful.util.spawn_with_shell("[ 1 != $(pgrep -u $USER -cf " .. prg .. ") ] || (" .. prg .. " " .. args .. ")")
   else
-    awful.util.spawn_with_shell("pgrep -u $USER -x " .. prg .. " || (" .. prg .. ")")
+    awful.util.spawn_with_shell("[ 1 != $(pgrep -u $USER -cf " .. prg .. ") ] || (" .. prg .. ")")
   end
 end
 
@@ -1083,23 +1085,14 @@ run_once("xcompmgr")
 run_once("xmodmap", ".Xmodmap")
 run_once("xsetroot", "-cursor_name left_ptr")
 run_once("xscreensaver", "-no-splash")
-run_once("/usr/bin/gnome-keyring-daemon", "--start --components=pkcs11")
-run_once("/usr/bin/gnome-keyring-daemon", "--start --components=ssh")
-run_once("/usr/bin/gnome-keyring-daemon", "--start --components=secrets")
-run_once("/usr/lib/gnome-user-share/gnome-user-share")
 
-run_once("pulseaudio")
 run_once("/opt/dropbox/dropbox")
-run_once("urxvtd")
 run_once("nvidia-settings", "-l")
 
-run_once("bluedevil-monolithic")
+run_once("blueman-applet")
 
 run_once("clipit")
-awful.util.spawn_with_shell("systemctl --user")
 awful.util.spawn("deluged")
-
-awful.util.spawn_with_shell("sleep 30 && pactl load-module module-bluetooth-discover")
 
 -- Fix keys not working on startup.
 awful.util.spawn(terminal .. " -e sleep 0")
