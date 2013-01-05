@@ -1,29 +1,29 @@
 -- Standard awesome library
-require("awful")
+awful = require("awful")
 awful.util.spawn("xsetroot -solid black")
-require("awful.autofocus")
-require("awful.rules")
+awful.autofocus = require("awful.autofocus")
+awful.rules = require("awful.rules")
 
 -- Theme handling library
-require("beautiful")
+beautiful = require("beautiful")
 
 -- Notification library
-require("naughty")
+naughty = require("naughty")
 naughty.config.presets.normal.opacity = 1
 naughty.config.presets.low.opacity = 1
 naughty.config.presets.critical.opacity = 1
 
 -- shifty - dynamic tagging library
-require("shifty")
+shifty = require("shifty")
 
 -- vicious - widgets
-require("vicious")
+vicious = require("vicious")
 
 --rodentbane
-require("rodentbane")
+rodentbane = require("rodentbane")
 
 --menubar
-require("menubar")
+menubar = require("menubar")
 menubar.cache_entries = true
 menubar.app_folders = { "/usr/share/applications/" }
 menubar.show_categories = false   -- Change to false if you want only programs to appear in the menu
@@ -454,7 +454,7 @@ mymainmenu = awful.menu({ items = {
 -- Create a textclock widget
 mytextclock = awful.widget.textclock({ align = "right" })
 
-require("calendar2")
+calendar2 = require("calendar2")
 calendar2.addCalendarToWidget(mytextclock, "<span color='green'>%s</span>")
 
 -- Create a systray
