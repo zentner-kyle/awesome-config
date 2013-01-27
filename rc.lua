@@ -1,11 +1,14 @@
--- Standard awesome library
-awful = require("awful")
-awful.util.spawn("xsetroot -solid black")
-awful.autofocus = require("awful.autofocus")
-awful.rules = require("awful.rules")
-
 -- Theme handling library
 beautiful = require("beautiful")
+
+-- Themes define colours, icons, and wallpapers
+beautiful.init(awful.util.getdir("config") .. "/themes/black/theme.lua")
+
+-- Standard awesome library
+awful = require("awful")
+
+awful.autofocus = require("awful.autofocus")
+awful.rules = require("awful.rules")
 
 -- Notification library
 naughty = require("naughty")
@@ -33,8 +36,6 @@ menubar.set_icon_theme("oxygen-gtk")
 print("Entered rc.lua: " .. os.time())
 
 -- {{{ Variable definitions
--- Themes define colours, icons, and wallpapers
-beautiful.init(awful.util.getdir("config") .. "/themes/black/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
 browser = "firefox"
@@ -58,7 +59,6 @@ layouts =
     awful.layout.suit.tile,
     awful.layout.suit.fair,
     awful.layout.suit.fair.horizontal,
-    awful.layout.suit.tile.left,
     awful.layout.suit.tile.bottom,
     awful.layout.suit.tile.top,
     awful.layout.suit.magnifier,
@@ -68,6 +68,12 @@ layouts =
 
 -- Define if we want to use titlebar on all applications.
 use_titlebar = false
+
+local second_screen = 1
+
+if screen.count() ~= 1 then
+  second_screen = 2
+end
 
 -- Shifty configured tags.
 shifty.config.tags = {
@@ -91,7 +97,7 @@ shifty.config.tags = {
       position  = 3,
       screen    = 1,
       exclusive = true,
-      layout    = awful.layout.suit.max,
+      layout    = awful.layout.suit.tile,
     },
     ["docs"] = {
       position  = 4,
@@ -108,7 +114,7 @@ shifty.config.tags = {
     },
     ["chat"] = {
       position  = 6,
-      screen    = 1,
+      screen    = second_screen,
       layout    = awful.layout.suit.tile,
       exclusive = true,
     },
@@ -120,8 +126,8 @@ shifty.config.tags = {
     },
     ["media"] = {
       position  = 8,
-      screen    = 1,
-      layout    = awful.layout.suit.max,
+      screen    = second_screen,
+      layout    = awful.layout.suit.tile,
       exclusive = true,
       solitary  = true,
     },
@@ -151,7 +157,7 @@ shifty.config.tags = {
     ["virtual"] = {
     },
     ["gimp"] = {
-      layout = awful.layout.suit.floating,
+      layout = awful.layout.suit.tile,
     },
     ["flash"] = {
       layout      = awful.layout.suit.max.fullscreen,
@@ -225,6 +231,7 @@ shifty.config.apps = {
             "Empathy",
             "XChat",
             "irssi",
+						"quassel",
         },
         tag = "chat",
         nopopup = true,
@@ -340,6 +347,8 @@ shifty.config.apps = {
             "rxvt",
             "sakura",
             "terminal",
+            "xterm",
+            "term",
         },
         honorsizehints = false,
         slave = true,
@@ -565,6 +574,18 @@ end
 shifty.taglist = mytaglist
 shifty.init()
 
+function prev_tag()
+  save_opacity()
+  awful.tag.viewprev()
+  restore_opacity()
+end
+
+function next_tag()
+  save_opacity()
+  awful.tag.viewnext()
+  restore_opacity() 
+end
+
 -- {{{ Mouse bindings
 root.buttons(awful.util.table.join(
     awful.button({ }, 3, function () mymainmenu:toggle() end)
@@ -574,46 +595,14 @@ root.buttons(awful.util.table.join(
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
     --Tags
-     awful.key({ modkey,          } , "Left",   function ()
-     save_opacity()
-     awful.tag.viewprev()
-     restore_opacity()
-     end)
-     ,awful.key({ modkey,         } , "Prior",  function ()
-       save_opacity()
-       awful.tag.viewprev()
-       restore_opacity() 
-     end)
-     ,awful.key({ modkey,         } , "s",      function ()
-       save_opacity()
-       awful.tag.viewprev()
-       restore_opacity() 
-     end)
-     ,awful.key({ modkey,         } , ",",      function ()
-       save_opacity()
-       awful.tag.viewprev()
-       restore_opacity() 
-     end)
-     ,awful.key({ modkey,         } , "Right",  function ()
-       save_opacity()
-       awful.tag.viewnext()
-       restore_opacity() 
-     end)
-     ,awful.key({ modkey,         } , "Next",   function ()
-       save_opacity()
-       awful.tag.viewnext()
-       restore_opacity() 
-     end)
-     ,awful.key({ modkey,         } , "d",      function ()
-       save_opacity()
-       awful.tag.viewnext()
-       restore_opacity() 
-     end)
-     ,awful.key({ modkey,         } , ".",      function ()
-       save_opacity()
-       awful.tag.viewnext()
-       restore_opacity() 
-     end)
+      awful.key({ modkey,         } , "Left",  prev_tag)
+     ,awful.key({ modkey,         } , "Prior", prev_tag)
+     ,awful.key({ modkey,         } , "s",     prev_tag)
+     ,awful.key({ modkey,         } , ",",     prev_tag)
+     ,awful.key({ modkey,         } , "Right", next_tag)
+     ,awful.key({ modkey,         } , "Next",  next_tag)
+     ,awful.key({ modkey,         } , "d",     next_tag) 
+     ,awful.key({ modkey,         } , ".",     next_tag)
      ,awful.key({ modkey,         } , "Escape", function ()
        save_opacity()
        awful.tag.history.restore()
@@ -622,7 +611,6 @@ globalkeys = awful.util.table.join(
      ,awful.key({ modkey, "Shift" } , "Escape", function ()
      save_opacity()
        awful.tag.history.restore()
-       --local index = awful.getidx()
        local tag = awful.tag.selected()
        awful.tag.history.restore()
        awful.client.movetotag(tag)
@@ -1085,6 +1073,8 @@ run_once("xcompmgr")
 run_once("xmodmap", ".Xmodmap")
 run_once("xsetroot", "-cursor_name left_ptr")
 run_once("xscreensaver", "-no-splash")
+run_once("skype")
+--run_once("pidgin")
 
 run_once("/opt/dropbox/dropbox")
 run_once("nvidia-settings", "-l")
@@ -1092,8 +1082,9 @@ run_once("nvidia-settings", "-l")
 run_once("blueman-applet")
 
 run_once("clipit")
-awful.util.spawn("deluged")
+-- awful.util.spawn("deluged")
 
 -- Fix keys not working on startup.
-awful.util.spawn(terminal .. " -e sleep 0")
+--awful.util.spawn(terminal .. " -e sleep 0")
+awful.util.spawn(terminal .. " -e exit")
 
