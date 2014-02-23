@@ -78,6 +78,7 @@ end
 -- Shifty configured tags.
 shifty.config.tags = {
     ["term"] = {
+      screen    = 1,
       position  = 1,
       layout    = awful.layout.suit.tile,
       mwfact    = 0.50,
@@ -87,7 +88,7 @@ shifty.config.tags = {
     ["web"] = {
       position    = 2,
       screen      = 1,
-      layout      = awful.layout.suit.max,
+      layout      = awful.layout.suit.tile,
       mwfact      = 0.60,
       exclusive   = true,
       solitary    = true,
@@ -128,8 +129,6 @@ shifty.config.tags = {
       position  = 8,
       screen    = second_screen,
       layout    = awful.layout.suit.tile,
-      exclusive = true,
-      solitary  = true,
     },
     ["sys"] = {
       position  = 9,
@@ -142,7 +141,6 @@ shifty.config.tags = {
     ["office"] = {
       persist   = true,
       layout    = awful.layout.suit.max,
-      exclusive = true,
     },
     ["p2p"] = {
       exclusive   = true,
@@ -151,8 +149,7 @@ shifty.config.tags = {
       exclusive   = true,
     },
     ["art"] = {
-      layout      = awful.layout.suit.max,
-      exclusive   = true,
+      layout      = awful.layout.suit.tile,
     },
     ["virtual"] = {
     },
@@ -173,6 +170,14 @@ shifty.config.tags = {
       layout = awful.layout.suit.floating,
       exclusive   = true,
       max_clients = 1,
+    },
+    ["monodevelop"] = {
+      layout    = awful.layout.suit.tile,
+      screen    = 1,
+    },
+    ["cs-next"] = {
+      layout    = awful.layout.suit.tile,
+      screen    = 1,
     },
 }
 
@@ -218,6 +223,7 @@ shifty.config.apps = {
             "OpenOffice",
             "libreoffice",
             "libreoffice 3.4",
+            "libreoffice 4.0",
             "office",
             "Abiword",
             "Gnumeric",
@@ -231,7 +237,7 @@ shifty.config.apps = {
             "Empathy",
             "XChat",
             "irssi",
-						"quassel",
+            "quassel",
         },
         tag = "chat",
         nopopup = true,
@@ -250,6 +256,8 @@ shifty.config.apps = {
             "mypaint",
             "Blender",
             "Inkscape",
+            "feh",
+            "krita",
         },
         tag = "art",
     },
@@ -277,11 +285,13 @@ shifty.config.apps = {
             "Miro",
             "vlc",
             "clementine",
+            "rhythmbox",
             "amarok",
             "aqualung",
             "deadbeef",
             "mplayer",
             "totem",
+            "guayadeque",
         },
         tag = "media",
     },
@@ -291,7 +301,8 @@ shifty.config.apps = {
             "mcomix",
             "comix",
             "geeqie",
-            "feh",
+            "gwenview",
+            "ristretto",
         },
         tag = "images",
     },
@@ -319,6 +330,7 @@ shifty.config.apps = {
     {
         match = {
             "Okular",
+            "zathura",
         },
         tag = "docs",
     },
@@ -365,7 +377,6 @@ shifty.config.apps = {
     {
         match = {
           "plugin%-container",
-          "exe",
         },
         fullscreen = true,
         border_width = 0,
@@ -384,6 +395,20 @@ shifty.config.apps = {
         },
         tag = "games",
         border_width = 0,
+    },
+    {
+        match = {
+          "MonoDevelop",
+          },
+          tag = "monodevelop",
+    },
+    {
+        match = {
+          "Control System Next IDE",
+          "Error Console",
+          },
+        tag = "cs-next",
+        nopopup = true,
     },
     {
         match = {""},
@@ -425,11 +450,31 @@ myawesomemenu = {
    ,{ "edit config",
     editor_cmd .. " " .. awful.util.getdir("config") .. "/rc.lua" }
    ,{ "restart", awesome.restart                                  }
-   ,{ "quit", awesome.quit                                        }
+   --,{ "quit", awesome.quit                                        }
 }
 
 function lock_screen()
-  awful.util.spawn("xscreensaver-command -lock")
+  awful.util.spawn("lock-screen.sh")
+end
+
+function suspend ()
+  lock_screen()
+  awful.util.spawn("sudo pm-suspend")
+  --awful.util.spawn("dbus-send --system \
+  ----print-reply \
+  ----dest='org.freedesktop.UPower' \
+  --/org/freedesktop/UPower \
+  --org.freedesktop.UPower.Suspend")
+end
+
+function hibernate ()
+  lock_screen()
+  awful.util.spawn("sudo pm-hibernate")
+  --awful.util.spawn("dbus-send --system \
+  ----print-reply \
+  ----dest='org.freedesktop.UPower' \
+  --/org/freedesktop/UPower \
+  --org.freedesktop.UPower.Hibernate")
 end
 
 mymainmenu = awful.menu({ items = {
@@ -437,22 +482,8 @@ mymainmenu = awful.menu({ items = {
                                     { "open terminal", terminal                        },
                                     { "run startup", "startup.sh"                      },
                                     { "lock screen", lock_screen              },
-                                    { "suspend", (function ()
-                                      lock_screen()
-                                      awful.util.spawn("dbus-send --system \
-                                      --print-reply \
-                                      --dest='org.freedesktop.UPower' \
-                                      /org/freedesktop/UPower \
-                                      org.freedesktop.UPower.Suspend")
-                                    end)},
-                                    { "hibernate", (function ()
-                                      lock_screen()
-                                      awful.util.spawn("dbus-send --system \
-                                      --print-reply \
-                                      --dest='org.freedesktop.UPower' \
-                                      /org/freedesktop/UPower \
-                                      org.freedesktop.UPower.Hibernate")
-                                    end)},
+                                    { "suspend", suspend},
+                                    { "hibernate", },
                                     { "shutdown", "gksudo halt"},
                                     { "restart", "gksudo reboot"}
                                   }})
@@ -686,7 +717,7 @@ globalkeys = awful.util.table.join(
     ,awful.key({ }, "Print", function ()
       awful.util.spawn("scrot -e 'mv $f ~/Pictures/Screenshots/ 2>/dev/null'") end)
     ,awful.key({ modkey, "Control" }, "r", awesome.restart)
-    ,awful.key({ modkey, "Shift"   }, "q", awesome.quit)
+    --,awful.key({ modkey, "Shift"   }, "q", awesome.quit)
 
     ,awful.key({ modkey,           }, "l",     function () awful.tag.incmwfact( 0.05)    end)
     ,awful.key({ modkey,           }, "h",     function () awful.tag.incmwfact(-0.05)    end)
@@ -764,6 +795,8 @@ globalkeys = awful.util.table.join(
    ,awful.key({ modkey }, "o", function ()
      rodentbane.click(3, modkey_sym)
    end)
+   ,awful.key({ modkey, "Control"   }, "s", suspend     ) 
+   ,awful.key({ modkey, "Control"   }, "d", lock_screen ) 
 )
 
 rodentbane.bind({ }, "h", function()
@@ -879,7 +912,10 @@ clientkeys = awful.util.table.join(
                   end
                end)
     ,awful.key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end)
-    ,awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     )
+    ,awful.key({ modkey, "Control" }, "space",  function (c)
+      awful.client.floating.toggle(c)
+      c.above = not c.above
+    end)
     ,awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end)
     ,awful.key({ modkey,           }, "p",      awful.client.movetoscreen                        )
     ,awful.key({ modkey, "Shift"   }, "r",      function (c) c:redraw()                       end)
@@ -1081,19 +1117,30 @@ end)
 run_once("xcompmgr")
 run_once("xmodmap", ".Xmodmap")
 run_once("xsetroot", "-cursor_name left_ptr")
-run_once("xscreensaver", "-no-splash")
+awful.util.spawn("start-pulseaudio-x11")
+run_once("nm-applet")
 run_once("skype")
 --run_once("pidgin")
 
 run_once("/opt/dropbox/dropbox")
 run_once("nvidia-settings", "-l")
 
-run_once("blueman-applet")
+--run_once("blueman-applet")
+run_once("bluedevil-monolithic")
 
 run_once("clipit")
+run_once("udiskie")
 -- awful.util.spawn("deluged")
 
 -- Fix keys not working on startup.
---awful.util.spawn(terminal .. " -e sleep 0")
 awful.util.spawn(terminal .. " -e exit")
+
+--awful.util.spawn("screensaver.sh")
+
+--awful.util.spawn("/usr/bin/gnome-keyring-daemon --start --components=pkcs11 &")
+--awful.util.spawn("/usr/bin/gnome-keyring-daemon --start --components=ssh &")
+--awful.util.spawn("/usr/bin/gnome-keyring-daemon --start --components=secrets &")
+--awful.util.spawn("/usr/lib/gnome-user-share/gnome-user-share &")
+awful.util.spawn("start_gnome_keyring.sh")
+
 
