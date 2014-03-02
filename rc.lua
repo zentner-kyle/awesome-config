@@ -914,7 +914,7 @@ clientkeys = awful.util.table.join(
     ,awful.key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end)
     ,awful.key({ modkey, "Control" }, "space",  function (c)
       awful.client.floating.toggle(c)
-      c.above = not c.above
+      c.above = true
     end)
     ,awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end)
     ,awful.key({ modkey,           }, "p",      awful.client.movetoscreen                        )
@@ -1018,7 +1018,7 @@ root.keys(globalkeys)
 -- }}}
 
 client.add_signal("focus", function(c)
-        c.border_color = beautiful.border_focus
+  c.border_color = beautiful.border_focus
   if not special_opacities[c] then
     c.opacity = 1
   end
@@ -1034,7 +1034,9 @@ function restore_opacity()
   unfocused_opacity = temp_unfocused_opacity
 end
 client.add_signal("unfocus", function(c)
-        c.border_color = beautiful.border_normal
+  if not c.above then
+    c.border_color = beautiful.border_normal
+  end
   if not special_opacities[c] then
     c.opacity = unfocused_opacity
   end
