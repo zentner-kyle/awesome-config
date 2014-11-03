@@ -7,3 +7,6 @@
 [submodule "vicious"]
 	path = vicious
 	url = ./vicious
+[submodule "tyrannical"]
+	path = tyrannical
+	url = https://github.com/Elv13/tyrannical.git
