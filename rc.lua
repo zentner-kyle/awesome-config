@@ -87,12 +87,12 @@ shifty.config.tags = {
     },
     ["web"] = {
       position    = 2,
-      screen      = 1,
+      screen      = 2,
       layout      = awful.layout.suit.tile,
       mwfact      = 0.60,
       exclusive   = true,
-      solitary    = true,
-      max_clients = 1,
+      --solitary    = true,
+      --max_clients = 1,
     },
     ["files"] = {
       position  = 3,
@@ -157,6 +157,7 @@ shifty.config.tags = {
       layout = awful.layout.suit.tile,
     },
     ["flash"] = {
+      persist   = true,
       layout      = awful.layout.suit.max.fullscreen,
       exclusive   = true,
       max_clients = 1,
@@ -177,7 +178,7 @@ shifty.config.tags = {
     },
     ["cs-next"] = {
       layout    = awful.layout.suit.tile,
-      screen    = 1,
+      screen    = 2,
     },
 }
 
@@ -204,7 +205,6 @@ shifty.config.apps = {
             "mutt",
         },
         tag = "mail",
-        nopopup = true,
     },
     {
         match = {
@@ -213,6 +213,7 @@ shifty.config.apps = {
             "Dolphin",
             "nautilus",
             "thunar",
+            "konqueror",
         },
         slave = true,
         tag = "files",
@@ -238,6 +239,7 @@ shifty.config.apps = {
             "XChat",
             "irssi",
             "quassel",
+            "chat",
         },
         tag = "chat",
         nopopup = true,
@@ -409,6 +411,7 @@ shifty.config.apps = {
           },
         tag = "cs-next",
         nopopup = true,
+        border_width = 0,
     },
     {
         match = {""},
@@ -1121,7 +1124,7 @@ run_once("xmodmap", ".Xmodmap")
 run_once("xsetroot", "-cursor_name left_ptr")
 awful.util.spawn("start-pulseaudio-x11")
 run_once("nm-applet")
-run_once("skype")
+--run_once("skype")
 --run_once("pidgin")
 
 run_once("/opt/dropbox/dropbox")
@@ -1131,7 +1134,8 @@ run_once("nvidia-settings", "-l")
 run_once("bluedevil-monolithic")
 
 run_once("clipit")
-run_once("udiskie")
+run_once("mate-power-manager")
+-- run_once("udiskie")
 -- awful.util.spawn("deluged")
 
 -- Fix keys not working on startup.
@@ -1144,5 +1148,6 @@ awful.util.spawn(terminal .. " -e exit")
 --awful.util.spawn("/usr/bin/gnome-keyring-daemon --start --components=secrets &")
 --awful.util.spawn("/usr/lib/gnome-user-share/gnome-user-share &")
 awful.util.spawn("start_gnome_keyring.sh")
+--awful.util.spawn("thunderbird")
 
 
