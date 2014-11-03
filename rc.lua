@@ -142,7 +142,7 @@ tyrannical.tags = {
     } ,
     {
         name        = "web",
-        init        = true,
+        init        = false,
         exclusive   = true,
         screen      = 1,
         layout      = awful.layout.suit.max,
@@ -159,7 +159,7 @@ tyrannical.tags = {
     } ,
     {
         name = "files",
-        init        = true,
+        init        = false,
         exclusive   = true,
         layout      = awful.layout.suit.tile,
         exec_once   = {"dolphin"},
@@ -171,7 +171,7 @@ tyrannical.tags = {
     } ,
     {
         name        = "docs",
-        init        = false, -- This tag wont be created at startup, but will be when one of the
+        init        = false,
                              -- client in the "class" section will start. It will be created on
                              -- the client startup screen
         exclusive   = true,
@@ -199,6 +199,7 @@ tyrannical.tags = {
     } ,
     {
         name        = "chat",
+        init        = false,
         screen      = second_screen,
         layout      = awful.layout.suit.tile,
         class       = {
@@ -214,12 +215,14 @@ tyrannical.tags = {
     } ,
     {
         name        = "text",
+        init        = false,
         layout      = awful.layout.suit.tile,
         exclusive   = true,
         class       = {}
     } ,
     {
         name        = "media",
+        init        = false,
         screen      = 2,
         layout      = awful.layout.suit.tile,
         class       = {
@@ -239,6 +242,7 @@ tyrannical.tags = {
     } ,
     {
         name        = "sys",
+        init        = false,
         layout      = awful.layout.suit.tile,
         exclusive = true,
         nopopup = true,
@@ -254,6 +258,7 @@ tyrannical.tags = {
     } ,
     {
         name        = "office",
+        init        = false,
         persist     = true,
         layout      = awful.layout.suit.max,
         --solitary  = false,
@@ -269,6 +274,7 @@ tyrannical.tags = {
     } ,
     {
         name        = "p2p",
+        init        = false,
         exclusive   = true,
         class       = {
             "Deluge",
@@ -279,6 +285,7 @@ tyrannical.tags = {
     } ,
     {
         name        = "mail",
+        init        = false,
         exclusive   = true,
         class       = {
             "Shredder",
@@ -288,6 +295,7 @@ tyrannical.tags = {
     } ,
     {
         name        = "art",
+        init        = false,
         layout      = awful.layout.suit.tile,
         class       = {
             "mypaint",
@@ -299,6 +307,7 @@ tyrannical.tags = {
     } ,
     {
         name        = "virtual",
+        init        = false,
         class       = {
             "VirtualBox",
         
@@ -306,6 +315,7 @@ tyrannical.tags = {
     } ,
     {
         name        = "gimp",
+        init        = false,
         layout      = awful.layout.suit.tile,
         class       = {
             "gimp",
@@ -313,6 +323,7 @@ tyrannical.tags = {
     } ,
     {
         name        = "flash",
+        init        = false,
         layout      = awful.layout.suit.max.fullscreen,
         persist     = true,
         exclusive   = true,
@@ -325,6 +336,7 @@ tyrannical.tags = {
     } ,
     {
         name        = "nitrogen",
+        init        = false,
         layout      = awful.layout.suit.floating,
         class       = {
           "nitrogen",
@@ -332,6 +344,7 @@ tyrannical.tags = {
     } ,
     {
         name        = "games",
+        init        = false,
         layout      = awful.layout.suit.floating,
         exclusive   = true,
         max_clients = 1,
@@ -343,6 +356,7 @@ tyrannical.tags = {
     } ,
     {
         name        = "cs-next",
+        init        = false,
         layout      = awful.layout.suit.tile,
         class       = {
           "Control System Next IDE",
@@ -426,14 +440,14 @@ mypromptbox = {}
 mylayoutbox = {}
 mytaglist = {}
 mytaglist.buttons = awful.util.table.join(
-                    --awful.button({ }, 1, awful.tag.viewonly),
-                    --awful.button({ modkey }, 1, awful.client.movetotag),
-                    --awful.button({ }, 3, awful.tag.viewtoggle),
-                    --awful.button({ modkey }, 3, awful.client.toggletag),
+                    awful.button({ }, 1, awful.tag.viewonly),
+                    awful.button({ modkey }, 1, awful.client.movetotag),
+                    awful.button({ }, 3, awful.tag.viewtoggle),
+                    awful.button({ modkey }, 3, awful.client.toggletag))
                     --awful.button({ }, 4, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
                     --awful.button({ }, 5, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end)),
---mytasklist = {},
---mytasklist.buttons = awful.util.table.join(
+mytasklist = {}
+mytasklist.buttons = awful.util.table.join(
                      awful.button({ }, 1, function (c)
                                               if c == client.focus then
                                                   c.minimized = true
@@ -490,7 +504,7 @@ for s = 1, screen.count() do
 
     -- Widgets that are aligned to the left
     local left_layout = wibox.layout.fixed.horizontal()
-    left_layout:add(mylauncher)
+    --left_layout:add(mylauncher)
     left_layout:add(mytaglist[s])
     left_layout:add(mypromptbox[s])
 
@@ -498,13 +512,15 @@ for s = 1, screen.count() do
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
 
-    cpuwidget = widget({ type = "textbox" })
-    vicious.register(cpuwidget, vicious.widgets.cpu, "CPU: $1%")
-    memimage = widget({type = "imagebox"})
-    memimage.image = image(awful.util.getdir("config") .. "/icons/mem.png")
+    memimage = wibox.widget.imagebox()
+    memimage:set_image(awful.util.getdir("config") .. "/icons/mem.png")
+
+    memwidgettext = wibox.widget.textbox()
+    vicious.register(memwidgettext, vicious.widgets.mem, " $1% ", 13)
 
     right_layout:add(mytextclock)
     right_layout:add(memimage)
+    right_layout:add(memwidgettext)
     right_layout:add(mylayoutbox[s])
 
     -- Now bring it all together (with the tasklist in the middle)
@@ -619,10 +635,10 @@ globalkeys = awful.util.table.join(
               tag:clients()[i].minimized=false
               tag:clients()[i]:redraw()
             end
-        end)
-    ,awful.key({modkey, "Control" }, "n", function()
-        shifty.tagtoscr(awful.util.cycle(screen.count(), mouse.screen + 1))
-    end),
+        end),
+    --,awful.key({modkey, "Control" }, "n", function()
+        --shifty.tagtoscr(awful.util.cycle(screen.count(), mouse.screen + 1))
+    --end),
 
 
     -- Layout manipulation
@@ -948,20 +964,20 @@ for i = 1, 9 do
                   function ()
                       local tag = awful.tag.gettags(client.focus.screen)[i]
 
-            if client.focus then
-                save_opacity()
-                local t = shifty.getpos(i)
-                -- awful.client.movetotag(t)
-                -- Below is a workaround for a bug.
-                awful.tag.viewonly(t)
-                awful.tag.history.restore()
-                awful.client.movetotag(t)
-                awful.tag.viewonly(t)
-                restore_opacity()
-            end
-                      --if client.focus and tag then
-                          --awful.client.movetotag(tag)
-                     --end
+            --if client.focus then
+                --save_opacity()
+                --local t = shifty.getpos(i)
+                ---- awful.client.movetotag(t)
+                ---- Below is a workaround for a bug.
+                --awful.tag.viewonly(t)
+                --awful.tag.history.restore()
+                --awful.client.movetotag(t)
+                --awful.tag.viewonly(t)
+                --restore_opacity()
+            --end
+                      if client.focus and tag then
+                          awful.client.movetotag(tag)
+                     end
                   end),
         awful.key({ modkey, "Control", "Shift" }, "#" .. i + 9,
                   function ()
@@ -1193,6 +1209,9 @@ awful.util.spawn(terminal .. " -e exit")
 --awful.util.spawn("/usr/lib/gnome-user-share/gnome-user-share &")
 awful.util.spawn("start_gnome_keyring.sh")
 --awful.util.spawn("thunderbird")
+
+--display(beautiful.wallpaper_cmd)
+awful.util.spawn(beautiful.wallpaper_cmd[1])
 
 
 -- }}}
