@@ -12,6 +12,51 @@ local beautiful = require("beautiful")
 -- Notification library
 local naughty = require("naughty")
 local menubar = require("menubar")
+local debug = require("debug")
+
+
+
+function display(val, title)
+  text = repr(val)
+  naughty.notify{
+    text = text,
+    title = title,
+  }
+end
+
+function repr (val)
+  function inner(tbl, indent)
+    local sep = ", "
+    local indent_text = ""
+    local result = "{"
+    if indent > 6 then
+      local indent_text = string.rep(" ", indent)
+      sep = ",\n" .. indent_text
+      result = result .. "\n" .. indent_text
+    end
+    for k, v in pairs(tbl) do
+      if type(k) ~= "string" then
+        result = result .. v .. sep
+      else
+        formatting = k .. " = "
+        if type(v) == "table" then
+          result = result .. formatting .. inner(v, indent + 2)
+        else
+          result = result .. formatting .. v .. sep
+        end
+      end
+    end
+    result = result .. "}"
+    return result
+  end
+  if type(val) == "table" then
+    return inner(val, 2)
+  end
+  if type(val) == "string" then
+    return "\"" .. val .. "\""
+  end
+  return "" .. val
+end
 
 
 
@@ -91,13 +136,14 @@ local layouts =
 -- }}}
 
 -- First, set some settings
-tyrannical.settings.default_layout =  awful.layout.suit.tile.left
+tyrannical.settings.default_layout =  awful.layout.suit.tile
 tyrannical.settings.mwfact = 0.66
 
 
 
 function lock_screen()
-  awful.util.spawn("lock-screen.sh")
+  --awful.util.spawn("lock-screen.sh")
+  awful.util.spawn("screen-locker.sh")
 end
 
 function suspend ()
@@ -218,7 +264,11 @@ tyrannical.tags = {
         init        = false,
         layout      = awful.layout.suit.tile,
         exclusive   = true,
-        class       = {}
+        class       = {
+            "Gvim",
+            "Geany",
+            "Emacs",
+        }
     } ,
     {
         name        = "media",
@@ -238,6 +288,7 @@ tyrannical.tags = {
             "mplayer",
             "totem",
             "guayadeque",
+            "lxmusic",
         }
     } ,
     {
@@ -254,6 +305,7 @@ tyrannical.tags = {
             "gdmap",
             "wicd",
             "Blueman%-manager",
+            "wpa_gui",
         }
     } ,
     {
@@ -325,13 +377,16 @@ tyrannical.tags = {
         name        = "flash",
         init        = false,
         layout      = awful.layout.suit.max.fullscreen,
-        persist     = true,
-        exclusive   = true,
+        --persist     = true,
+        --exclusive   = true,
         max_clients = 1,
         fullscreen  = true,
         border_width = 0,
         class       = {
           "plugin%-container",
+          "Plugin%-container",
+          "plugin-container",
+          "Plugin-container",
         }
     } ,
     {
@@ -349,7 +404,7 @@ tyrannical.tags = {
         exclusive   = true,
         max_clients = 1,
         class       = {
-
+          "Steam",
           "python.real",
           "spaz",
         }
@@ -416,7 +471,8 @@ myawesomemenu = {
 
 mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesome_icon },
                                     { "open terminal", terminal }
-                                  }
+                                  },
+                          theme = { width = 200, height = 18 },
                         })
 
 mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
@@ -469,7 +525,8 @@ mytasklist.buttons = awful.util.table.join(
                                                   instance:hide()
                                                   instance = nil
                                               else
-                                                  instance = awful.menu.clients({ width=250 })
+                                                  instance = awful.menu.clients({
+                                                    theme = { width=500 } })
                                               end
                                           end),
                      awful.button({ }, 4, function ()
@@ -499,7 +556,7 @@ for s = 1, screen.count() do
     mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
 
     -- Create the wibox
-    mywibox[s] = awful.wibox({ position = "top", screen = s })
+    mywibox[s] = awful.wibox({ position = "top", screen = s, height = 40 })
 
 
     -- Widgets that are aligned to the left
@@ -583,7 +640,7 @@ globalkeys = awful.util.table.join(
 
     awful.key({ modkey,           }, "j",
         function ()
-            awful.client.focus.byidx( 0)
+            awful.client.focus.byidx( 1)
             if client.focus then client.focus:raise() end
         end),
     awful.key({ modkey,           }, "k",
@@ -591,7 +648,7 @@ globalkeys = awful.util.table.join(
             awful.client.focus.byidx(-1)
             if client.focus then client.focus:raise() end
         end),
-    awful.key({ modkey,           }, "w", function () mymainmenu:toggle() end),
+    --awful.key({ modkey,           }, "w", function () mymainmenu:toggle() end),
 
     awful.key({ modkey, }, "x", function () awful.tag.delete() end),
     awful.key({ modkey,           }, "r",
@@ -632,8 +689,8 @@ globalkeys = awful.util.table.join(
         function()
             local tag = awful.tag.selected()
             for i=1, #tag:clients() do
-              tag:clients()[i].minimized=false
-              tag:clients()[i]:redraw()
+              tag:clients()[i].minimized = false
+              --tag:clients()[i]:redraw()
             end
         end),
     --,awful.key({modkey, "Control" }, "n", function()
@@ -719,19 +776,23 @@ globalkeys = awful.util.table.join(
                   awful.util.eval, nil,
                   awful.util.getdir("cache") .. "/history_eval")
               end)
+    ,awful.key({ modkey }, "F5",
+              function ()
+                  naughty.notify{text=client.focus}
+              end)
 
-   ,awful.key({ }, "XF86AudioRaiseVolume", function ()
-       awful.util.spawn("amixer set Master 9%+")
-       awful.util.spawn_with_shell("notify-send -t 1000 'Volume' \\\"`amixer get Master | tail -n 1 | tr ' ' '\\n' | tail -n 2 | tr '\\n' ' '`\\\"")
-       end)
-   ,awful.key({ }, "XF86AudioLowerVolume", function ()
-       awful.util.spawn("amixer set Master 9%-")
-       awful.util.spawn_with_shell("notify-send -t 1000 'Volume' \\\"`amixer get Master | tail -n 1 | tr ' ' '\\n' | tail -n 2 | tr '\\n' ' '`\\\"")
-       end)
-   ,awful.key({ }, "XF86AudioMute", function ()
-       awful.util.spawn("amixer sset Master toggle") end)
-   ,awful.key({ }, "XF86Launch1", function ()
-       awful.util.spawn("amixer sset Master toggle") end)
+   --,awful.key({ }, "XF86AudioRaiseVolume", function ()
+       --awful.util.spawn("amixer set Master 9%+")
+       --awful.util.spawn_with_shell("notify-send -t 1000 'Volume' \\\"`amixer get Master | tail -n 1 | tr ' ' '\\n' | tail -n 2 | tr '\\n' ' '`\\\"")
+       --end)
+   --,awful.key({ }, "XF86AudioLowerVolume", function ()
+       --awful.util.spawn("amixer set Master 9%-")
+       --awful.util.spawn_with_shell("notify-send -t 1000 'Volume' \\\"`amixer get Master | tail -n 1 | tr ' ' '\\n' | tail -n 2 | tr '\\n' ' '`\\\"")
+       --end)
+   --,awful.key({ }, "XF86AudioMute", function ()
+       --awful.util.spawn("amixer sset Master toggle") end)
+   --,awful.key({ }, "XF86Launch1", function ()
+       --awful.util.spawn("amixer sset Master toggle") end)
    ,awful.key({ modkey }, "b", function ()
        mywibox[mouse.screen].visible = not mywibox[mouse.screen].visible
    end)
@@ -834,6 +895,10 @@ rodentbane.bind({ }, "o", function()
   rodentbane.stop()
 end)
 
+rodentbane.bind({ }, "Escape", function()
+  rodentbane.stop()
+end)
+
 special_opacities = {}
 
 function set_special_opacity(client, opacity)
@@ -887,8 +952,16 @@ clientkeys = awful.util.table.join(
     end)
     ,awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end)
     ,awful.key({ modkey,           }, "p",      awful.client.movetoscreen                        )
-    ,awful.key({ modkey, "Shift"   }, "r",      function (c) c:redraw()                       end)
-    ,awful.key({ modkey, "Shift"   }, "m",      function (c) c.minimized = not c.minimized    end)
+    --,awful.key({ modkey, "Shift"   }, "r",      function (c) c:redraw()                       end)
+    ,awful.key({ modkey, "Shift"   }, "m",      function (c)
+      --c.hidden = true
+      --c.focus = false
+      --awful.client.focus.history.delete(c)
+      c.minimized = true
+      naughty.notify{text=""}
+      --client.focus
+      --naughty.notify{ text = debug.traceback()}
+    end)
     ,awful.key({ modkey,           }, "m",
         function (c)
             c.maximized_horizontal = not c.maximized_horizontal
@@ -1080,7 +1153,7 @@ client.connect_signal("manage", function (c, startup)
     end
 end)
 
-client.add_signal("focus", function(c)
+client.connect_signal("focus", function(c)
   c.border_color = beautiful.border_focus
   if not special_opacities[c] then
     c.opacity = 1
@@ -1096,7 +1169,7 @@ end
 function restore_opacity()
   unfocused_opacity = temp_unfocused_opacity
 end
-client.add_signal("unfocus", function(c)
+client.connect_signal("unfocus", function(c)
   if not c.above then
     c.border_color = beautiful.border_normal
   end
@@ -1115,57 +1188,16 @@ function run_once(prg, args)
   end
 end
 
-function display(val, title)
-  text = repr(val)
-  naughty.notify{
-    text = text,
-    title = title,
-  }
-end
-
-function repr (val)
-  function inner(tbl, indent)
-    local sep = ", "
-    local indent_text = ""
-    local result = "{"
-    if indent > 6 then
-      local indent_text = string.rep(" ", indent)
-      sep = ",\n" .. indent_text
-      result = result .. "\n" .. indent_text
-    end
-    for k, v in pairs(tbl) do
-      if type(k) ~= "string" then
-        result = result .. v .. sep
-      else
-        formatting = k .. " = "
-        if type(v) == "table" then
-          result = result .. formatting .. inner(v, indent + 2)
-        else
-          result = result .. formatting .. v .. sep
-        end
-      end
-    end
-    result = result .. "}"
-    return result
-  end
-  if type(val) == "table" then
-    return inner(val, 2)
-  end
-  if type(val) == "string" then
-    return "\"" .. val .. "\""
-  end
-  return "" .. val
-end
-
 --Signal function to execute when a new client appears.
-client.add_signal("manage", function (c, startup)
+client.connect_signal("manage", function (c, startup)
     -- Enable sloppy focus
-    c:add_signal("mouse::enter", function(c)
-        if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
-            and awful.client.focus.filter(c)
-            then
-            client.focus = c
-        end
+    c:connect_signal("mouse::enter", function(c)
+        --naughty.notify{text="mouse_enter"}
+        --if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
+            --and awful.client.focus.filter(c)
+            --then
+            --client.focus = c
+        --end
     end)
     if not startup then
         -- Set the windows at the slave,
@@ -1183,7 +1215,7 @@ run_once("xcompmgr")
 run_once("xmodmap", ".Xmodmap")
 run_once("xsetroot", "-cursor_name left_ptr")
 awful.util.spawn("start-pulseaudio-x11")
-run_once("nm-applet")
+--run_once("nm-applet")
 --run_once("skype")
 --run_once("pidgin")
 
@@ -1195,20 +1227,25 @@ run_once("bluedevil-monolithic")
 
 run_once("clipit")
 run_once("mate-power-manager")
+run_once("syndaemon", "-t -k -i 2")
+run_once("ibus-daemon")
 -- run_once("udiskie")
 -- awful.util.spawn("deluged")
+run_once("start-volumeicon.sh")
 
 -- Fix keys not working on startup.
 awful.util.spawn(terminal .. " -e exit")
 
---awful.util.spawn("screensaver.sh")
+awful.util.spawn("screensaver.sh")
 
 --awful.util.spawn("/usr/bin/gnome-keyring-daemon --start --components=pkcs11 &")
 --awful.util.spawn("/usr/bin/gnome-keyring-daemon --start --components=ssh &")
 --awful.util.spawn("/usr/bin/gnome-keyring-daemon --start --components=secrets &")
 --awful.util.spawn("/usr/lib/gnome-user-share/gnome-user-share &")
-awful.util.spawn("start_gnome_keyring.sh")
---awful.util.spawn("thunderbird")
+
+--awful.util.spawn("start_gnome_keyring.sh")
+
+awful.util.spawn("thunderbird")
 
 --display(beautiful.wallpaper_cmd)
 awful.util.spawn(beautiful.wallpaper_cmd[1])
