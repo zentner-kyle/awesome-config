@@ -1,12 +1,12 @@
 [submodule "rodentbane"]
 	path = rodentbane
-	url = ./rodentbane
+	url = https://github.com/zentner-kyle/rodentbane.git
 [submodule "shifty"]
 	path = shifty
-	url = ./shifty
+	url = https://bioe007@github.com/bioe007/awesome-shifty.git
 [submodule "vicious"]
 	path = vicious
-	url = ./vicious
+	url = http://git.sysphere.org/vicious
 [submodule "tyrannical"]
 	path = tyrannical
 	url = https://github.com/Elv13/tyrannical.git
