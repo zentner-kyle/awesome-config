@@ -14,6 +14,9 @@ local naughty = require("naughty")
 local menubar = require("menubar")
 local debug = require("debug")
 
+-- Themes define colours, icons, and wallpapers
+beautiful.init(awful.util.getdir("config") .. "/themes/black/theme.lua")
+
 
 
 function display(val, title)
@@ -93,8 +96,6 @@ end
 -- }}}
 
 -- {{{ Variable definitions
--- Themes define colours, icons, and wallpapers
-beautiful.init(awful.util.getdir("config") .. "/themes/black/theme.lua")
 
 
 -- Notification library
@@ -305,6 +306,7 @@ tyrannical.tags = {
             "gdmap",
             "wicd",
             "Blueman%-manager",
+            "Wicd-client.py",
             "wpa_gui",
         }
     } ,
@@ -319,6 +321,8 @@ tyrannical.tags = {
             "libreoffice",
             "libreoffice 3.4",
             "libreoffice 4.0",
+            "libreoffice-startcenter",
+            "libreoffice-writer",
             "office",
             "Abiword",
             "Gnumeric",
@@ -331,6 +335,8 @@ tyrannical.tags = {
         class       = {
             "Deluge",
             "Transmission",
+            "Transmission-gtk",
+            "Transmission-qt",
             "aria",
             "nicotine",
         }
@@ -447,7 +453,7 @@ tyrannical.properties.centered = {
 }
 
 -- Do not honor size hints request for those classes
-tyrannical.properties.size_hints_honor = { xterm = false, URxvt = false, aterm = false, sauer_client = false, mythfrontend  = false}
+tyrannical.properties.size_hints_honor = { xterm = false, URxvt = false, aterm = false, sauer_client = false, mythfrontend  = false, gvim = false }
 
 
 -- {{{ Wallpaper
@@ -466,13 +472,13 @@ myawesomemenu = {
    { "manual", terminal .. " -e man awesome" },
    { "edit config", editor_cmd .. " " .. awesome.conffile },
    { "restart", awesome.restart },
-   --{ "quit", awesome.quit }
+   { "quit", awesome.quit }
 }
 
 mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesome_icon },
                                     { "open terminal", terminal }
                                   },
-                          theme = { width = 200, height = 18 },
+                          theme = { width = theme.size * 10, height = theme.size },
                         })
 
 mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
@@ -526,7 +532,7 @@ mytasklist.buttons = awful.util.table.join(
                                                   instance = nil
                                               else
                                                   instance = awful.menu.clients({
-                                                    theme = { width=500 } })
+                                                    theme = { width=theme.size * 25 } })
                                               end
                                           end),
                      awful.button({ }, 4, function ()
@@ -556,7 +562,7 @@ for s = 1, screen.count() do
     mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
 
     -- Create the wibox
-    mywibox[s] = awful.wibox({ position = "top", screen = s, height = 40 })
+    mywibox[s] = awful.wibox({ position = "top", screen = s, height = theme.size * 2 })
 
 
     -- Widgets that are aligned to the left
@@ -573,7 +579,7 @@ for s = 1, screen.count() do
     memimage:set_image(awful.util.getdir("config") .. "/icons/mem.png")
 
     memwidgettext = wibox.widget.textbox()
-    vicious.register(memwidgettext, vicious.widgets.mem, " $1% ", 13)
+    vicious.register(memwidgettext, vicious.widgets.mem, " $1% ", theme.size)
 
     right_layout:add(mytextclock)
     right_layout:add(memimage)
@@ -1245,7 +1251,7 @@ awful.util.spawn("screensaver.sh")
 
 --awful.util.spawn("start_gnome_keyring.sh")
 
-awful.util.spawn("thunderbird")
+--awful.util.spawn("thunderbird")
 
 --display(beautiful.wallpaper_cmd)
 awful.util.spawn(beautiful.wallpaper_cmd[1])

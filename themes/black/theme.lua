@@ -4,10 +4,13 @@
 
 theme = {}
 
+--theme.size = 10
+theme.size = 20
 --theme.font          = "sans 8"
 --theme.font          = "Inconsolata 8"
 --theme.font          = "Inconsolata 18"
-theme.font          = "Inconsolata 20"
+--theme.font          = "Inconsolata 20"
+theme.font = "Inconsolata " .. (theme.size)
 
 theme.bg_normal     = "#000000B0"
 theme.bg_focus      = "#242933B0"
@@ -44,8 +47,8 @@ theme.tasklist_floating_icon = "/usr/share/awesome/themes/default/tasklist/float
 -- menu_[bg|fg]_[normal|focus]
 -- menu_[border_color|border_width]
 theme.menu_submenu_icon = "/usr/share/awesome/themes/default/submenu.png"
-theme.menu_height = "40"
-theme.menu_width  = "100"
+theme.menu_height = "" .. (theme.size * 2)
+theme.menu_width  = "" .. (theme.size * 5)
 
 -- You can add as many variables as
 -- you wish and access them by using
