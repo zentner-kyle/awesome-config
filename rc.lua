@@ -106,7 +106,7 @@ naughty.config.presets.critical.opacity = 1
 
 -- This is used later as the default terminal and editor to run.
 browser = "firefox"
-terminal = "myterminal"
+terminal = "sakura -x tmux"
 editor = os.getenv("EDITOR") or "vim"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -144,12 +144,14 @@ tyrannical.settings.mwfact = 0.66
 
 function lock_screen()
   --awful.util.spawn("lock-screen.sh")
-  awful.util.spawn("screen-locker.sh")
+  --awful.util.spawn("screen-locker.sh")
+  --awful.util.spawn("xautolock -locknow")
+  awful.util.spawn("mate-screensaver-command --lock")
 end
 
 function suspend ()
   lock_screen()
-  awful.util.spawn("sudo pm-suspend")
+  awful.util.spawn("gksudo pm-suspend")
   --awful.util.spawn("dbus-send --system \
   ----print-reply \
   ----dest='org.freedesktop.UPower' \
@@ -159,7 +161,7 @@ end
 
 function hibernate ()
   lock_screen()
-  awful.util.spawn("sudo pm-hibernate")
+  awful.util.spawn("gksudo pm-hibernate")
   --awful.util.spawn("dbus-send --system \
   ----print-reply \
   ----dest='org.freedesktop.UPower' \
@@ -184,7 +186,7 @@ tyrannical.tags = {
         layout      = awful.layout.suit.tile, -- Use the tile layout
         selected    = true,
         class       = { --Accept the following classes, refuse everything else (because of "exclusive=true")
-            "xterm" , "urxvt" , "aterm","URxvt","XTerm","konsole","terminator","gnome-terminal"
+            "xterm" , "urxvt" , "aterm","URxvt","XTerm","konsole","terminator","gnome-terminal", "Sakura", "sakura"
         }
     } ,
     {
@@ -431,7 +433,7 @@ tyrannical.properties.intrusive = {
     "ksnapshot"     , "pinentry"       , "gtksu"     , "kcalc"        , "xcalc"               ,
     "feh"           , "Gradient editor", "About KDE" , "Paste Special", "Background color"    ,
     "kcolorchooser" , "plasmoidviewer" , "Xephyr"    , "kruler"       , "plasmaengineexplorer",
-    "kupfer"        , "avant%-window%-navigator"     , "awn%-applet"  ,
+    "kupfer"        , "avant%-window%-navigator"     , "awn%-applet"  , "Kupfer.py"
 }
 
 -- Ignore the tiled layout for the matching clients
@@ -731,7 +733,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Shift"   }, "l",     function () awful.tag.incnmaster(-1)      end),
     awful.key({ modkey, "Control" }, "h",     function () awful.tag.incncol( 1)         end),
     awful.key({ modkey, "Control" }, "l",     function () awful.tag.incncol(-1)         end),
-    awful.key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1) end),
+    awful.key({ modkey, "Control" }, "space", function () awful.layout.inc(layouts,  1) end),
     awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end),
 
     awful.key({ modkey,           }, ";",     function ()
@@ -1218,31 +1220,35 @@ client.connect_signal("manage", function (c, startup)
 end) 
 
 run_once("xcompmgr")
-run_once("xmodmap", ".Xmodmap")
-run_once("xsetroot", "-cursor_name left_ptr")
-awful.util.spawn("start-pulseaudio-x11")
+--run_once("xmodmap", ".Xmodmap")
+
+--run_once("xsetroot", "-cursor_name left_ptr")
+--awful.util.spawn("start-pulseaudio-x11")
 --run_once("nm-applet")
 --run_once("skype")
 --run_once("pidgin")
 
-run_once("/opt/dropbox/dropbox")
+--run_once("/opt/dropbox/dropbox")
 --run_once("nvidia-settings", "-l")
 
---run_once("blueman-applet")
-run_once("bluedevil-monolithic")
+run_once("blueman-applet")
+--run_once("bluedevil-monolithic")
 
+run_once("nm-applet")
 run_once("clipit")
 run_once("mate-power-manager")
-run_once("syndaemon", "-t -k -i 2")
+--run_once("syndaemon", "-t -k -i 2")
 run_once("ibus-daemon")
 -- run_once("udiskie")
 -- awful.util.spawn("deluged")
-run_once("start-volumeicon.sh")
+--run_once("start-volumeicon.sh")
 
 -- Fix keys not working on startup.
-awful.util.spawn(terminal .. " -e exit")
+--awful.util.spawn(terminal .. " -e exit")
+--awful.util.spawn("konsole")
 
-awful.util.spawn("screensaver.sh")
+--awful.util.spawn("screensaver.sh")
+run_once("mate-screensaver")
 
 --awful.util.spawn("/usr/bin/gnome-keyring-daemon --start --components=pkcs11 &")
 --awful.util.spawn("/usr/bin/gnome-keyring-daemon --start --components=ssh &")
