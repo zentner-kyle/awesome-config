@@ -177,7 +177,7 @@ if screen.count() ~= 1 then
 end
 
 -- Setup some tags
-tyrannical.tags = {
+local tag_data = {
     {
         name        = "term",                 -- Call the tag "Term"
         init        = true,                   -- Load the tag on startup
@@ -427,6 +427,8 @@ tyrannical.tags = {
         }
     } ,
 }
+
+tyrannical.tags = tag_data
 
 -- Ignore the tag "exclusive" property for the following clients (matched by classes)
 tyrannical.properties.intrusive = {
@@ -1020,6 +1022,67 @@ clientkeys = awful.util.table.join(
     ,awful.key({ modkey, "Shift"   }, "Next",  send_next ) 
 )
 
+function table_contains(tab, elem)
+  for _, other_elem in pairs(tab) do
+    if other_elem == elem then
+      return true
+    end
+  end
+  return false
+end
+
+function get_tag_by_num(screen, num)
+  if screen == 1 then
+    local props = tag_data[num]
+    local selected = awful.tag.selectedlist(screen)
+    local valid_indices = {}
+    local selected_indices = {}
+    local all_tags = awful.tag.gettags(screen)
+
+    for _, tag in pairs(all_tags) do
+      if awful.tag.getproperty(tag, "name") == props.name then
+        if table_contains(selected, tag) then
+          selected_indices[awful.tag.getidx(tag)] = tag
+        else
+          valid_indices[awful.tag.getidx(tag)] = tag
+        end
+      end
+    end
+
+    local first_selected = nil
+    for index, tag in pairs(selected_indices) do
+      if first_selected == nil or index < first_selected then
+        first_selected = index
+      end
+    end
+
+    if first_selected == nil then
+      first_selected = 0
+    end
+
+    local number_of_tags = #all_tags
+    for index = first_selected + 1, number_of_tags do
+      if valid_indices[index] then
+        return index
+      end
+    end
+
+    for index = 0, first_selected - 1 do
+      if valid_indices[index] then
+        return index
+      end
+    end
+    --for index, tag in pairs(awful.tag.gettags(screen)) do
+      --if awful.tag.getproperty(tag, "name") == props.name then
+        --if not table_contains(selected, tag) then
+          --return index
+        --end
+      --end
+    --end
+  end
+  return num
+end
+
 -- Bind all key numbers to tags.
 -- Be careful: we use keycodes to make it works on any keyboard layout.
 -- This should map on the top row of your keyboard, usually 1 to 9.
@@ -1028,7 +1091,8 @@ for i = 1, 9 do
         awful.key({ modkey }, "#" .. i + 9,
                   function ()
                         local screen = mouse.screen
-                        local tag = awful.tag.gettags(screen)[i]
+                        local index = get_tag_by_num(screen, i)
+                        local tag = awful.tag.gettags(screen)[index]
                         if tag then
                            awful.tag.viewonly(tag)
                         end
@@ -1036,14 +1100,16 @@ for i = 1, 9 do
         awful.key({ modkey, "Control" }, "#" .. i + 9,
                   function ()
                       local screen = mouse.screen
-                      local tag = awful.tag.gettags(screen)[i]
+                      local index = get_tag_by_num(screen, i)
+                      local tag = awful.tag.gettags(screen)[index]
                       if tag then
                          awful.tag.viewtoggle(tag)
                       end
                   end),
         awful.key({ modkey, "Shift" }, "#" .. i + 9,
                   function ()
-                      local tag = awful.tag.gettags(client.focus.screen)[i]
+                      local index = get_tag_by_num(screen, i)
+                      local tag = awful.tag.gettags(client.focus.screen)[index]
 
             --if client.focus then
                 --save_opacity()
