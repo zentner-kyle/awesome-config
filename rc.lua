@@ -204,6 +204,7 @@ local tag_data = {
             "Gran Paradiso",
             "Pentadactyl",
             "dwb",
+            "servo",
           }
     } ,
     {
@@ -211,7 +212,6 @@ local tag_data = {
         init        = false,
         exclusive   = true,
         layout      = awful.layout.suit.tile,
-        exec_once   = {"dolphin"},
         class  = {
             "Thunar", "Konqueror", "Dolphin", "ark", "Nautilus","emelfm",
             "pcmanfm",
@@ -1304,7 +1304,8 @@ run_once("nm-applet")
 run_once("clipit")
 run_once("mate-power-manager")
 --run_once("syndaemon", "-t -k -i 2")
-run_once("ibus-daemon")
+--run_once("ibus-daemon")
+run_once("fcitx", "-r")
 -- run_once("udiskie")
 -- awful.util.spawn("deluged")
 --run_once("start-volumeicon.sh")
@@ -1315,6 +1316,8 @@ run_once("ibus-daemon")
 
 --awful.util.spawn("screensaver.sh")
 run_once("mate-screensaver")
+run_once("volumeicon")
+run_once("kupfer")
 
 --awful.util.spawn("/usr/bin/gnome-keyring-daemon --start --components=pkcs11 &")
 --awful.util.spawn("/usr/bin/gnome-keyring-daemon --start --components=ssh &")
